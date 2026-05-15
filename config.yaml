@@ -1,0 +1,12 @@
+# Configure the Sober launch options.
+launch:
+
+  # Place ID. You usually shouldn't change this.
+  place-id: 16855862021
+
+  # The domain to go to after launching.
+  goto-domain: "example.rbx"
+
+
+
+test: 1
