@@ -7,6 +7,23 @@ launch:
   # The domain to go to after launching.
   goto-domain: "example.rbx"
 
+# Configure the window options.
+window:
+
+  # Window position.
+  position-x: 40
+  position-y: 40
+
+  # Window size.
+  size-x: 800
+  size-y: 600
+
+  # The "input field" click position (absolute).
+  # Remember that the main content of the page is guranteed to be at least ~200px down from the window position.
+  input-x: 50
+  input-y: 240
+
+
 # Configure log detections. You probably shouldn't change this mostly.
 detection:
 
