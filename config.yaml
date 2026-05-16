@@ -23,6 +23,9 @@ window:
   input-x: 50
   input-y: 240
 
+  # ms
+  delay-bewtween-inputs: 100
+
 
 # Configure log detections. You probably shouldn't change this mostly.
 detection:

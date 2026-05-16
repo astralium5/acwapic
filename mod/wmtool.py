@@ -1,4 +1,5 @@
 # Do window manager stuff, it's that simple
+# (+input magic)
 from mod import config
 from ewmh import EWMH
 import os, platform

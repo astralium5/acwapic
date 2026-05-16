@@ -70,9 +70,12 @@ def start():
                     # String contains a substring in ignore list
                     continue
 
-                # trimmed trimmed line (detect a ".rbx]: " pattern)
-                if ".rbx]: " in trimmed_line:
-                    trimmed_line = trimmed_line.split(".rbx]: ")[1]
+                # trimmed trimmed line (detect a "]: " pattern)
+                if "]: " in trimmed_line:
+                    # Find the index of the FIRST occourence of it
+                    index = trimmed_line.find("]: ")
+                    index += 3
+                    trimmed_line = trimmed_line[index::]
 
                 log_site(trimmed_line)
 
