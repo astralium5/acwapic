@@ -5,7 +5,7 @@ launch:
   place-id: 16855862021
 
   # The domain to go to after launching.
-  goto-domain: "example.rbx"
+  goto-domain: "test.acwapic.rbx"
 
 # Configure the window options.
 window:

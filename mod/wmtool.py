@@ -1,4 +1,4 @@
-# Check window manager, it's that simple
+# Do window manager stuff, it's that simple
 from mod import config
 from ewmh import EWMH
 import os, platform

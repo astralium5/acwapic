@@ -2,6 +2,7 @@
 # Oh and does output magic, cant forget that
 
 from mod import wmtool, config
+from mod.logger import *
 import subprocess, signal
 
 cfg_gameid = config.get("launch.place-id")
@@ -42,13 +43,13 @@ def start():
 
     started_state = False
 
-    print("Awaiting for the player window")
+    log_sys("Awaiting for the player window")
 
     process_window = wmtool.await_window("Sober")
 
     wmtool.setup_window(process_window, cfg_window_position_x, cfg_window_position_y, cfg_window_size_x, cfg_window_size_y)
 
-    print("Will start processing data")
+    log_sys("Will start processing data")
 
     try:
         for line in process.stdout:
@@ -69,7 +70,11 @@ def start():
                     # String contains a substring in ignore list
                     continue
 
-                print(trimmed_line)
+                # trimmed trimmed line (detect a ".rbx]: " pattern)
+                if ".rbx]: " in trimmed_line:
+                    trimmed_line = trimmed_line.split(".rbx]: ")[1]
+
+                log_site(trimmed_line)
 
                 # keyword register magic
                 for keyword, func in registry.items():
@@ -81,6 +86,6 @@ def start():
 
             pass
     except KeyboardInterrupt:
-        print("Processing stopped - Keyboard interrupt")
+        log_sys("Processing stopped - Keyboard interrupt inside terminal")
         process.send_signal(signal.SIGTERM)
         return

@@ -2,3 +2,4 @@ venv/
 .vscode/
 mod/__pycache__/
 __pycache__/
+demo_*

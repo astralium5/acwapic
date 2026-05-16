@@ -16,3 +16,15 @@ def get(path, default=None):
             return default
             
     return current
+
+# Will override this session only
+def override(path: str, value):
+    keys = path.split(".")
+    current = config
+    
+    for key in keys[:-1]:
+        if key not in current or not isinstance(current[key], dict):
+            current[key] = {}
+        current = current[key]
+    
+    current[keys[-1]] = value
