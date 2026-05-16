@@ -7,6 +7,18 @@ launch:
   # The domain to go to after launching.
   goto-domain: "example.rbx"
 
+# Configure log detections. You probably shouldn't change this mostly.
+detection:
 
+  # The value to check for first in the log output.
+  rbx-identifier: "[FLog::Output]"
 
-test: 1
+  # After the above check successfully runs, The slice index to pass to the user functions.
+  slice-index: 74
+
+  # The value to check for to actually activate the user functions.
+  start-processing-call: "CatWeb v"
+
+  # Ignore values
+  ignore-values:
+  - "Settings Date "
