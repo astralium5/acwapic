@@ -1,6 +1,9 @@
 # Configure the Sober launch options.
 launch:
 
+  # Flatpak name.
+  flatpak-name: "org.vinegarhq.Sober"
+
   # Place ID. You usually shouldn't change this.
   place-id: 16855862021
 
@@ -24,7 +27,7 @@ window:
   input-y: 240
 
   # ms
-  delay-bewtween-inputs: 100
+  delay-bewtween-inputs: 40
 
 
 # Configure log detections. You probably shouldn't change this mostly.

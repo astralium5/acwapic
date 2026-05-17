@@ -1,10 +1,13 @@
 # Starts the main Sober client and enters the game, and the site.
 # Oh and does output magic, cant forget that
 
-from mod import wmtool, config
-from mod.logger import *
+from acwapic.mod import config
+from acwapic.mod import wmtool
+from acwapic.mod.logger import *
+from acwapic.mod.respond import send
 import subprocess, signal
 
+cfg_fpname = config.get("launch.flatpak-name")
 cfg_gameid = config.get("launch.place-id")
 cfg_gamedomain = config.get("launch.goto-domain")
 
@@ -22,19 +25,28 @@ cfg_window_size_y = config.get("window.size-y")
 
 registry = {}
 
+# Register a trigger.
 def register(keyword):
-
     def decorator(func):
         registry[keyword] = func
 
         return func
-
+    
     return decorator
 
+# Functions to pre-run before actual start.
+def pre():
+    # Update package
+    
+    p_update = subprocess.run(
+        ["flatpak", "update", cfg_fpname]
+    )
+
+# Start the main orca process.
 def start():
     process = subprocess.Popen(
         # the backslash is extremely important (actually)
-        ["flatpak", "run", "org.vinegarhq.Sober", f"roblox://placeId={cfg_gameid}\\&launchData={cfg_gamedomain}"],
+        ["flatpak", "run", cfg_fpname, f"roblox://placeId={cfg_gameid}\\&launchData={cfg_gamedomain}"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -58,6 +70,7 @@ def start():
             if cfg_identifier in line:
                 # We got an output line!
                 trimmed_line = line[cfg_sliceindex::]
+                is_from_site = False
 
                 if not started_state:
                     if cfg_start_identifier in trimmed_line:
@@ -76,15 +89,23 @@ def start():
                     index = trimmed_line.find("]: ")
                     index += 3
                     trimmed_line = trimmed_line[index::]
+                    is_from_site = True
 
-                log_site(trimmed_line)
+                if is_from_site:
+                    log_site(trimmed_line)
+                else:
+                    log_cw(trimmed_line)
 
                 # keyword register magic
                 for keyword, func in registry.items():
                     if trimmed_line.startswith(f"{keyword} "):
                         payload = trimmed_line[len(keyword) + 1::]
 
-                        func(payload)
+                        # The part where the function runs
+                        func_result = func(payload)
+                        if func_result != None:
+                            func_result = str(func_result)
+                            send(func_result)
                         break
 
             pass

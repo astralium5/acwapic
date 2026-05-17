@@ -10,7 +10,10 @@ def log_site(msg):
     print(f"{_c(119)} SITE {_c(0)} {msg}")
 
 def log_sys(msg):
-    print(f"{_c(117)} SYS {_c(0)} {msg}")
+    print(f"{_c(219)} SYS {_c(0)} {msg}")
 
 def log_user(msg):
     print(f"{_c(221)} USER {_c(0)} {msg}")
+
+def log_cw(msg):
+    print(f"{_c(117)} CATWEB {_c(0)} {msg}")
