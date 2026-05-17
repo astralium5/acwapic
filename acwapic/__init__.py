@@ -1,5 +1,5 @@
 # "Astral's CatWeb API Core"
-from .mod import config, exceptions, orca, wmtool, perm
+from .mod import config, exceptions, orca, wmtool
 from .mod.logger import log_user, log_sys
 
 version = "1.0.0"
@@ -12,12 +12,6 @@ os_value = wmtool.checkos()
 
 if os_value != "Linux":
     raise exceptions.LinuxRequiredError
-
-sudo_value = perm.checksudo()
-input_value = perm.checkinput()
-
-if not (sudo_value or input_value):
-    raise PermissionError
 
 def run():
     log_sys("Running preload")

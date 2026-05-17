@@ -5,3 +5,4 @@ acwapic/__pycache__/
 __pycache__/
 demo_*
 main.py
+config.yaml

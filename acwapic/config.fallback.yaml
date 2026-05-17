@@ -45,3 +45,5 @@ detection:
   # Ignore values
   ignore-values:
   - "Settings Date "
+  - "Server RobloxGitHash: "
+  - "Server Prefix: "

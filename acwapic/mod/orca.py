@@ -35,10 +35,29 @@ def register(keyword):
 
 # Functions to pre-run before actual start.
 def pre():
-    # Update package
-    subprocess.run(
-        ["flatpak", "update", cfg_fpname]
+    log_sys(f"Starting flatpak update for {cfg_fpname}...")
+
+    p_update = subprocess.Popen(
+        ["flatpak", "update", cfg_fpname, "-y"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
     )
+
+    if p_update.stdout:
+        for line in p_update.stdout:
+            cleaned_line = line.strip()
+            if cleaned_line:  # Skip empty lines
+                log_sys(cleaned_line)
+
+    return_code = p_update.wait()
+
+    if return_code == 0:
+        log_sys("Flatpak update completed successfully.")
+    else:
+        log_error(f"Flatpak update failed with exit code {return_code}")
+
 
 # Start the main orca process.
 def start():
