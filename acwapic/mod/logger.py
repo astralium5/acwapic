@@ -17,3 +17,6 @@ def log_user(msg):
 
 def log_cw(msg):
     print(f"{_c(117)} CATWEB {_c(0)} {msg}")
+
+def log_warn(msg):
+    print(f"{_c(220)} WARN {_c(0)} {msg}")

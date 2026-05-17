@@ -1,5 +1,4 @@
 # Do window manager stuff
-from acwapic.mod import config
 from ewmh import EWMH
 import os, platform
 

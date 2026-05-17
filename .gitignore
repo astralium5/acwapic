@@ -1,5 +1,7 @@
 venv/
 .vscode/
-mod/__pycache__/
+acwapic/mod/__pycache__/
+acwapic/__pycache__/
 __pycache__/
 demo_*
+main.py

@@ -1,5 +1,5 @@
 # Handles responses
-from acwapic.mod import config
+from . import config
 from time import sleep
 import pyperclip, keyboard, mouse
 

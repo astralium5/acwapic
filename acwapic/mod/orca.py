@@ -1,10 +1,9 @@
 # Starts the main Sober client and enters the game, and the site.
 # Oh and does output magic, cant forget that
 
-from acwapic.mod import config
-from acwapic.mod import wmtool
-from acwapic.mod.logger import *
-from acwapic.mod.respond import send
+from .logger import *
+from .respond import send
+from . import config, wmtool, perm
 import subprocess, signal
 
 cfg_fpname = config.get("launch.flatpak-name")
@@ -37,13 +36,22 @@ def register(keyword):
 # Functions to pre-run before actual start.
 def pre():
     # Update package
-    
-    p_update = subprocess.run(
+    subprocess.run(
         ["flatpak", "update", cfg_fpname]
     )
 
 # Start the main orca process.
 def start():
+    # Get permissions
+    can_respond = False
+    sudo_value = perm.checksudo()
+    input_value = perm.checkinput()
+
+    if not (sudo_value or input_value):
+        log_warn("Missing input permissions. Responses won't send.")
+    else:
+        can_respond = True
+
     process = subprocess.Popen(
         # the backslash is extremely important (actually)
         ["flatpak", "run", cfg_fpname, f"roblox://placeId={cfg_gameid}\\&launchData={cfg_gamedomain}"],
@@ -103,7 +111,7 @@ def start():
 
                         # The part where the function runs
                         func_result = func(payload)
-                        if func_result != None:
+                        if (func_result != None) and can_respond:
                             func_result = str(func_result)
                             send(func_result)
                         break

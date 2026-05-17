@@ -21,3 +21,4 @@ class SoberNotInstalledError(AcwapicError):
     def __init__(self, message="Sober (org.vinegarhq.Sober) is not installed via Flatpak."):
         self.message = message
         super().__init__(self.message)
+
