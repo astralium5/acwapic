@@ -1,18 +1,16 @@
 # Handles responses
 from . import config
 from time import sleep
-import pyperclip, keyboard, mouse
+import pyperclip, keyboard, pyautogui
 
-cfg_delays = config.get("window.delay-bewtween-inputs")
+cfg_delays = config.get("window.delay-bewtween-inputs") / 1000
 
 cfg_mx = config.get("window.input-x")
 cfg_my = config.get("window.input-y")
 
 def send(val: str):
     pyperclip.copy(val)
-    mouse.move(x=cfg_mx, y=cfg_my)
-    sleep(cfg_delays)
-    mouse.click(button="left")
+    pyautogui.click(cfg_mx, cfg_my)
     sleep(cfg_delays)
     keyboard.send("ctrl+v")
     sleep(cfg_delays)

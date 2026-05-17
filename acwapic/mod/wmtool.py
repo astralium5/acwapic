@@ -26,7 +26,7 @@ def await_window(name: str) -> int:
         active_win = ewmh.getActiveWindow()
         if active_win == None:
             continue
-        active_name = ewmh.getWmName(active_win).decode("utf-8")
+        active_name = ewmh.getWmName(active_win)
 
         if active_name == name:
             return active_win
