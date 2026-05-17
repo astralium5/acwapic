@@ -2,13 +2,14 @@
 # Oh and does output magic, cant forget that
 
 from .logger import *
-from .respond import send
+from .respond import *
 from . import config, wmtool, perm
-import subprocess, signal
+import subprocess, signal, time
 
 cfg_fpname = config.get("launch.flatpak-name")
 cfg_gameid = config.get("launch.place-id")
 cfg_gamedomain = config.get("launch.goto-domain")
+gamedomainlen = len(cfg_gamedomain)
 
 cfg_identifier = config.get("detection.rbx-identifier")
 cfg_sliceindex = config.get("detection.slice-index")
@@ -21,6 +22,8 @@ cfg_window_position_x = config.get("window.position-x")
 cfg_window_position_y = config.get("window.position-y")
 cfg_window_size_x = config.get("window.size-x")
 cfg_window_size_y = config.get("window.size-y")
+
+last_action = time.time()
 
 registry = {}
 
@@ -94,6 +97,12 @@ def start():
         for line in process.stdout:
             line = line.strip()
 
+            current_time = time.time()
+            if current_time - last_action >= 600:
+                last_action = current_time
+                log_sys("Last action >600s, sending anti-idle key")
+                antiidle()
+
             if cfg_identifier in line:
                 # We got an output line!
                 trimmed_line = line[cfg_sliceindex::]
@@ -110,11 +119,11 @@ def start():
                     # String contains a substring in ignore list
                     continue
 
-                # trimmed trimmed line (detect a "]: " pattern)
-                if "]: " in trimmed_line:
+                # trimmed trimmed line (detect a "{SITENAME}]: " pattern)
+                if f"{cfg_gamedomain}]: " in trimmed_line:
                     # Find the index of the FIRST occourence of it
-                    index = trimmed_line.find("]: ")
-                    index += 3
+                    index = trimmed_line.find(f"{cfg_gamedomain}]: ")
+                    index += 3 + gamedomainlen
                     trimmed_line = trimmed_line[index::]
                     is_from_site = True
 
@@ -133,6 +142,7 @@ def start():
                         if (func_result != None) and can_respond:
                             func_result = str(func_result)
                             send(func_result)
+                            last_action = current_time
                         break
 
             pass

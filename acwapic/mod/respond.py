@@ -16,3 +16,10 @@ def send(val: str):
     sleep(cfg_delays)
     keyboard.send("enter")
     sleep(cfg_delays)
+
+def antiidle():
+    # press escape twice
+    keyboard.send("esc")
+    sleep(cfg_delays)
+    keyboard.send("esc")
+    sleep(cfg_delays)
