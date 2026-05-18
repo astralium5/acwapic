@@ -12,7 +12,6 @@ cfg_gamedomain = config.get("launch.goto-domain")
 gamedomainlen = len(cfg_gamedomain)
 
 cfg_identifier = config.get("detection.rbx-identifier")
-cfg_sliceindex = config.get("detection.slice-index")
 
 cfg_start_identifier = config.get("detection.start-processing-call")
 
@@ -22,8 +21,6 @@ cfg_window_position_x = config.get("window.position-x")
 cfg_window_position_y = config.get("window.position-y")
 cfg_window_size_x = config.get("window.size-x")
 cfg_window_size_y = config.get("window.size-y")
-
-last_action = time.time()
 
 registry = {}
 
@@ -94,6 +91,8 @@ def start():
     log_sys("Will start processing data")
 
     try:
+        last_action = time.time()
+
         for line in process.stdout:
             line = line.strip()
 
@@ -105,7 +104,9 @@ def start():
 
             if cfg_identifier in line:
                 # We got an output line!
-                trimmed_line = line[cfg_sliceindex::]
+                index = line.find(cfg_identifier)
+                index += len(cfg_identifier)
+                trimmed_line = line[index::]
                 is_from_site = False
 
                 if not started_state:
@@ -114,10 +115,6 @@ def start():
                         started_state = True
                     else:
                         continue
-
-                if any(value in trimmed_line for value in cfg_ignorevalues):
-                    # String contains a substring in ignore list
-                    continue
 
                 # trimmed trimmed line (detect a "{SITENAME}]: " pattern)
                 if f"{cfg_gamedomain}]: " in trimmed_line:
@@ -129,9 +126,7 @@ def start():
 
                 if is_from_site:
                     log_site(trimmed_line)
-                else:
-                    log_cw(trimmed_line)
-
+                    
                 # keyword register magic
                 for keyword, func in registry.items():
                     if trimmed_line.startswith(f"{keyword} "):
@@ -144,6 +139,12 @@ def start():
                             send(func_result)
                             last_action = current_time
                         break
+                
+                if any(value in trimmed_line for value in cfg_ignorevalues) or is_from_site:
+                    # String contains a substring in ignore list
+                    continue
+                else:
+                    log_rbx(trimmed_line)
 
             pass
     except KeyboardInterrupt:

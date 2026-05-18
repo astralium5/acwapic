@@ -37,8 +37,8 @@ def log_sys(msg):
 def log_user(msg):
     _l(f"{_c(221)} USER {_c(0)} {_t(221)}{msg}")
 
-def log_cw(msg):
-    _l(f"{_c(117)} CATWEB {_c(0)} {_t(117)}{msg}")
+def log_rbx(msg):
+    _l(f"{_c(117)} RBX {_c(0)} {_t(117)}{msg}")
 
 def log_warn(msg):
     _l(f"{_c(220)} WARN {_c(0)}{_get_caller_name()}{_t(220)}{msg}")
