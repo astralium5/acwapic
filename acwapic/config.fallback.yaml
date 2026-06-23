@@ -7,11 +7,10 @@ launch:
   # Place ID. You usually shouldn't change this.
   place-id: 16855862021
 
-  # The domains to go to after launching.
+  # The domains to go to after launching. Up to 9.
   domains:
   - "test.acwapic.rbx"
-  - "test.acwapic.rbx/server"
-  - "api.rbx"
+  - "example.rbx"
 
   # The BEGINNING domain to load.
   starting-domain: "confirmloading.acwapic.rbx"
