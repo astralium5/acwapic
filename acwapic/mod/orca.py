@@ -8,8 +8,8 @@ import subprocess, signal, time
 
 cfg_fpname = config.get("launch.flatpak-name")
 cfg_gameid = config.get("launch.place-id")
-cfg_gamedomain = config.get("launch.goto-domain")
-gamedomainlen = len(cfg_gamedomain)
+cfg_domains = config.get("launch.domains")
+cfg_startingdomain = config.get("launch.starting-domain")
 
 cfg_identifier = config.get("detection.rbx-identifier")
 
@@ -23,6 +23,8 @@ cfg_window_size_x = config.get("window.size-x")
 cfg_window_size_y = config.get("window.size-y")
 
 registry = {}
+
+domainmap = {}
 
 # Register a trigger.
 def register(keyword):
@@ -73,7 +75,7 @@ def start():
 
     process = subprocess.Popen(
         # the backslash is extremely important (actually)
-        ["flatpak", "run", cfg_fpname, f"roblox://placeId={cfg_gameid}\\&launchData={cfg_gamedomain}"],
+        ["flatpak", "run", cfg_fpname, f"roblox://placeId={cfg_gameid}\\&launchData=confirmloading.acwapic.rbx"],
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -87,6 +89,8 @@ def start():
     process_window = wmtool.await_window("Sober")
 
     wmtool.setup_window(process_window, cfg_window_position_x, cfg_window_position_y, cfg_window_size_x, cfg_window_size_y)
+
+    # Tab setup does not start until the game fully loads and opens the confirmation site
 
     log_sys("Will start processing data")
 
@@ -108,24 +112,33 @@ def start():
                 index += len(cfg_identifier)
                 trimmed_line = line[index::]
                 is_from_site = False
+                which_site = ""
 
                 if not started_state:
                     if cfg_start_identifier in trimmed_line:
                         # We've started processing the logs
+                        # Setup tabs here
+                        domainmap = list(setuptabs(cfg_domains).values())
+                        print(domainmap)
                         started_state = True
                     else:
                         continue
 
                 # trimmed trimmed line (detect a "{SITENAME}]: " pattern)
-                if f"{cfg_gamedomain}]: " in trimmed_line:
-                    # Find the index of the FIRST occourence of it
-                    index = trimmed_line.find(f"{cfg_gamedomain}]: ")
-                    index += 3 + gamedomainlen
-                    trimmed_line = trimmed_line[index::]
-                    is_from_site = True
+                for domain in cfg_domains:
+                    if f"{domain}]: " in trimmed_line:
+                        # Find the index of the FIRST occourence of it
+                        index = trimmed_line.find(f"{domain}]: ")
+                        index += 3 + len(domain)
+                        trimmed_line = trimmed_line[index::]
+                        is_from_site = True
+                        which_site = domain
+                        # Switch to that tab
+                        switchtab(domainmap.index(domain) + 1)
+                        break
 
                 if is_from_site:
-                    log_site(trimmed_line)
+                    log_site(trimmed_line, which_site)
                     
                 # keyword register magic
                 for keyword, func in registry.items():

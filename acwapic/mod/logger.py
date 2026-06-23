@@ -18,8 +18,11 @@ def _t(color):
 def _l(t):
     print(f"{t}{_c(0)}{_t(0)}")
 
-def _get_caller_name():
+def _get_caller_name(force = None):
     try:
+        if force != None:
+            return f"{_c(16)}{_t(0)} {force.upper()} {_c(0)} "
+        
         caller_frame = inspect.stack()[2]
         
         filename = Path(caller_frame.filename).stem
@@ -28,8 +31,8 @@ def _get_caller_name():
     except Exception:
         return ""
 
-def log_site(msg):
-    _l(f"{_c(119)} SITE {_c(0)} {_t(119)}{msg}")
+def log_site(msg, origin):
+    _l(f"{_c(119)} SITE {_c(0)}{_get_caller_name(origin)}{_t(119)}{msg}")
 
 def log_sys(msg):
     _l(f"{_c(219)} SYS {_c(0)}{_get_caller_name()}{_t(219)}{msg}")

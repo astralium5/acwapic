@@ -7,8 +7,14 @@ launch:
   # Place ID. You usually shouldn't change this.
   place-id: 16855862021
 
-  # The domain to go to after launching.
-  goto-domain: "test.acwapic.rbx"
+  # The domains to go to after launching.
+  domains:
+  - "test.acwapic.rbx"
+  - "test.acwapic.rbx/server"
+  - "api.rbx"
+
+  # The BEGINNING domain to load.
+  starting-domain: "confirmloading.acwapic.rbx"
 
 # Configure the window options.
 window:
@@ -23,6 +29,7 @@ window:
 
   # The "input field" click position (absolute).
   # Remember that the main content of the page is guranteed to be at least ~200px down from the window position.
+  # (unless you have a liquid retina super xxxhdpi xdr display or something)
   input-x: 50
   input-y: 240
 
@@ -40,7 +47,8 @@ detection:
   slice-index: 74
 
   # The value to check for to actually activate the user functions.
-  start-processing-call: "CatWeb v"
+  # Note: Change if you also changed the starting domain to the one you chose.
+  start-processing-call: "894359832752385495"
 
   # Ignore values
   ignore-values:
