@@ -41,7 +41,6 @@ def setuptabs(domains):
     return tabs
 
 def switchtab(index):
-    print(index)
     if index > 0 and index < 10:
         keyboard.send(f"ctrl+{index}")
         sleep(cfg_delays)

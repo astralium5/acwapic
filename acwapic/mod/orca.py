@@ -119,7 +119,6 @@ def start():
                         # We've started processing the logs
                         # Setup tabs here
                         domainmap = list(setuptabs(cfg_domains).values())
-                        print(domainmap)
                         started_state = True
                     else:
                         continue
