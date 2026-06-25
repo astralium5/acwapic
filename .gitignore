@@ -7,3 +7,5 @@ demo_*
 main.py
 config.yaml
 user
+*.db
+run.sh

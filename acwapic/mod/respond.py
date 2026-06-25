@@ -9,7 +9,13 @@ cfg_setup_delays = 0.350
 cfg_mx = config.get("window.input-x")
 cfg_my = config.get("window.input-y")
 
+tabs_open = 0
+tabs = {}
+current_tab = 0
+
 def setuptabs(domains):
+    global tabs_open, tabs, current_tab
+
     # make sure we're not focused on the beginning input field
     pyautogui.click(cfg_mx, cfg_my)
     sleep(cfg_setup_delays)
@@ -21,8 +27,6 @@ def setuptabs(domains):
     sleep(cfg_setup_delays)
 
     # open tabs
-    tabs_open = 0
-    tabs = {}
     for domain in domains:
         if tabs_open >= 9:
             logger.log_warn("Only 9 tabs can be open at a time.")
@@ -38,11 +42,16 @@ def setuptabs(domains):
         tabs_open += 1
         tabs[tabs_open] = domain
     
+    current_tab = tabs_open
+    
     return tabs
 
 def switchtab(index):
-    if index > 0 and index < 10:
+    global current_tab
+
+    if index > 0 and index <= tabs_open and index != current_tab:
         keyboard.send(f"ctrl+{index}")
+        current_tab = index
         sleep(cfg_delays)
 
 def send(val: str):
@@ -53,6 +62,14 @@ def send(val: str):
     sleep(cfg_delays)
     keyboard.send("enter")
     sleep(cfg_delays)
+
+def send_tab(tab: int, val: str):
+    global current_tab
+
+    if tab > 0 and tab <= tabs_open and tab != current_tab:
+        switchtab(tab)
+
+    send(val)
 
 def antiidle():
     # press escape twice

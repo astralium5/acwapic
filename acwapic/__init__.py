@@ -1,5 +1,5 @@
 # "Astral's CatWeb API Core"
-from .mod import config, exceptions, orca, wmtool
+from .mod import config, exceptions, orca, wmtool, respond
 from .mod.logger import log_user, log_sys
 
 version = "1.0.0"
@@ -7,6 +7,8 @@ version = "1.0.0"
 register = orca.register
 log = log_user
 override = config.override
+
+send_tab = respond.send_tab
 
 os_value = wmtool.checkos()
 
@@ -25,5 +27,6 @@ __all__ = [
     'log',
     'run',
     'exceptions',
-    'version'
+    'version',
+    'send_tab',
 ]

@@ -113,6 +113,7 @@ def start():
                 trimmed_line = line[index::]
                 is_from_site = False
                 which_site = ""
+                tab_switch_goal = 0
 
                 if not started_state:
                     if cfg_start_identifier in trimmed_line:
@@ -132,8 +133,7 @@ def start():
                         trimmed_line = trimmed_line[index::]
                         is_from_site = True
                         which_site = domain
-                        # Switch to that tab
-                        switchtab(domainmap.index(domain) + 1)
+                        tab_switch_goal = domainmap.index(domain) + 1
                         break
 
                 if is_from_site:
@@ -148,6 +148,7 @@ def start():
                         func_result = func(payload)
                         if (func_result != None) and can_respond:
                             func_result = str(func_result)
+                            switchtab(tab_switch_goal)
                             send(func_result)
                             last_action = current_time
                         break
