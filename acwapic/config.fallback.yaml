@@ -40,7 +40,7 @@ window:
 detection:
 
   # The value to check for first in the log output.
-  rbx-identifier: "[FLog::Output]"
+  rbx-identifier: "[FLog::CreatorOutput]"
 
   # After the above check successfully runs, The slice index to pass to the user functions.
   slice-index: 74
