@@ -1,6 +1,7 @@
 # Handles responses
 from . import config, logger
 from time import sleep
+from threading import RLock
 import pyperclip, keyboard, pyautogui
 
 cfg_delays = config.get("window.delay-bewtween-inputs") / 1000
@@ -12,6 +13,7 @@ cfg_my = config.get("window.input-y")
 tabs_open = 0
 tabs = {}
 current_tab = 0
+input_lock = RLock()
 
 def setuptabs(domains):
     global tabs_open, tabs, current_tab
@@ -49,27 +51,30 @@ def setuptabs(domains):
 def switchtab(index):
     global current_tab
 
-    if index > 0 and index <= tabs_open and index != current_tab:
-        keyboard.send(f"ctrl+{index}")
-        current_tab = index
-        sleep(cfg_delays)
+    with input_lock:
+        if index > 0 and index <= tabs_open and index != current_tab:
+            keyboard.send(f"ctrl+{index}")
+            current_tab = index
+            sleep(cfg_delays)
 
 def send(val: str):
-    pyperclip.copy(val)
-    pyautogui.click(cfg_mx, cfg_my)
-    sleep(cfg_delays)
-    keyboard.send("ctrl+v")
-    sleep(cfg_delays)
-    keyboard.send("enter")
-    sleep(cfg_delays)
+    with input_lock:
+        pyperclip.copy(val)
+        pyautogui.click(cfg_mx, cfg_my)
+        sleep(cfg_delays)
+        keyboard.send("ctrl+v")
+        sleep(cfg_delays)
+        keyboard.send("enter")
+        sleep(cfg_delays)
 
 def send_tab(tab: int, val: str):
     global current_tab
 
-    if tab > 0 and tab <= tabs_open and tab != current_tab:
-        switchtab(tab)
+    with input_lock:
+        if tab > 0 and tab <= tabs_open and tab != current_tab:
+            switchtab(tab)
 
-    send(val)
+        send(val)
 
 def antiidle():
     # press escape twice

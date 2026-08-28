@@ -5,6 +5,9 @@ from .logger import *
 from .respond import *
 from . import config, wmtool, perm
 import subprocess, signal, time
+from concurrent.futures import ThreadPoolExecutor
+from queue import Queue, Empty
+from threading import Event, Thread
 
 cfg_fpname = config.get("launch.flatpak-name")
 cfg_gameid = config.get("launch.place-id")
@@ -26,6 +29,8 @@ registry = {}
 
 domainmap = {}
 
+handler_workers = 8
+
 # Register a trigger.
 def register(keyword):
     def decorator(func):
@@ -34,6 +39,28 @@ def register(keyword):
         return func
     
     return decorator
+
+
+def _run_handler(func, payload):
+    try:
+        return func(payload)
+    except Exception as error:
+        log_error(f"Handler failed: {error}")
+        return None
+
+
+def _send_responses(response_queue, stop_event, can_respond):
+    while not stop_event.is_set() or not response_queue.empty():
+        try:
+            tab_switch_goal, func_result = response_queue.get(timeout=0.1)
+        except Empty:
+            continue
+
+        if (func_result is not None) and can_respond:
+            switchtab(tab_switch_goal)
+            send(str(func_result))
+
+        response_queue.task_done()
 
 # Functions to pre-run before actual start.
 def pre():
@@ -94,6 +121,16 @@ def start():
 
     log_sys("Will start processing data")
 
+    response_queue = Queue()
+    response_stop = Event()
+    response_thread = Thread(
+        target=_send_responses,
+        args=(response_queue, response_stop, can_respond),
+        daemon=True
+    )
+    response_thread.start()
+    executor = ThreadPoolExecutor(max_workers=handler_workers)
+
     try:
         last_action = time.time()
 
@@ -144,13 +181,12 @@ def start():
                     if trimmed_line.startswith(f"{keyword} "):
                         payload = trimmed_line[len(keyword) + 1::]
 
-                        # The part where the function runs
-                        func_result = func(payload)
-                        if (func_result != None) and can_respond:
-                            func_result = str(func_result)
-                            switchtab(tab_switch_goal)
-                            send(func_result)
-                            last_action = current_time
+                        future = executor.submit(_run_handler, func, payload)
+                        future.add_done_callback(
+                            lambda completed, tab=tab_switch_goal: response_queue.put(
+                                (tab, completed.result())
+                            )
+                        )
                         break
                 
                 if any(value in trimmed_line for value in cfg_ignorevalues) or is_from_site:
@@ -164,3 +200,7 @@ def start():
         log_sys("Processing stopped - Keyboard interrupt inside terminal")
         process.send_signal(signal.SIGTERM)
         return
+    finally:
+        executor.shutdown(wait=True)
+        response_stop.set()
+        response_thread.join()
